@@ -121,7 +121,7 @@ public class ftpDownload {
             for (FTPFile file : files) {
                 // 判断是否是今天的文件
                 if (file.isFile() && file.getTimestamp().after(DateUtils.getToday00())) {
-                    File localFile = new File(localTempDir + file.getName().replace('/', '\\'));
+                    File localFile = new File(localTempDir + file.getName());
                     // 判断本地文件是否下载完全
                     if (localFile.length() < file.getSize()) {
                         names.add(file.getName());
@@ -205,16 +205,15 @@ public class ftpDownload {
     }
 
     public static ArrayList<String> downloads(ArrayList<String> names) {
-        ArrayList<String> downloadNames = new ArrayList<>();
-
         if (names == null || names.isEmpty()) {
-            return downloadNames;
+            return null;
         }
 
         if (!ftpClient.isConnected()) {
             connect();
         }
 
+        ArrayList<String> downloadedNames = new ArrayList<>();
         try {
             FTPFile[] files = ftpClient.listFiles(new String((remoteVisitDir).getBytes("UTF-8"), "ISO-8859-1"));
             for (FTPFile file : files) {
@@ -226,7 +225,7 @@ public class ftpDownload {
                     LogUtils.getInstance().logInfo("[ftp] FTP file " + file.getName() + "; Size:" + file.getSize());
                     // 判断是否下载成功，成功即可复制文件
                     if (ExcuteDownLoad(file)) {
-                        downloadNames.add(file.getName());
+                        downloadedNames.add(file.getName());
                     }
                 }
             }
@@ -234,7 +233,7 @@ public class ftpDownload {
             e.printStackTrace();
         }
 
-        return downloadNames;
+        return downloadedNames;
     }
 
     public static boolean mkdir(String workPath, String dir) throws IOException {
@@ -336,18 +335,25 @@ public class ftpDownload {
         while (curTry <= maxTry) {
             try {
                 ftpClient = new FTPClient();
-                ftpClient.setConnectTimeout(15000);
-                // 设置Socket 连接超时, 2019-12-21 测试
-                ftpClient.setDataTimeout(15000);
-//                ftpClient.setDefaultTimeout(15000);
-//                ftpClient.setSoTimeout(20000);
-                // 设置Socket 连接超时, 2019-12-21 测试 End
+                // FTP Encode
+                ftpClient.setControlEncoding("GBK");
+
+                // 设置 Socket 连接超时
+                ftpClient.setConnectTimeout(30 * 1000);
+                // 设置终端的传输数据的 Socket 的 Sotimeout
+                ftpClient.setDataTimeout(30 * 1000);
+                // 设置终端的传输控制命令的 Socket 的 SoTimeout
+                // ftpClient.setDefaultTimeout(15000);
+                // ftpClient.setSoTimeout(20000);
+                // 设置当处于传输数据过程中，按指定的时间阈值定期让传输控制命令的 Socket 发送一个无操作命令 NOOP 给服务器，
+                // 让它 keep alive。
+                ftpClient.setControlKeepAliveTimeout(3 * 1000);
+
                 ftpClient.connect(hostName, port);
                 if (ftpClient.login(userName, password)) {
                     ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                     // ftpClient.setRemoteVerificationEnabled(false);
                     ftpClient.enterLocalPassiveMode();
-                    // ftpClient.setControlEncoding("GBK");
                     if (FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
                         LogUtils.getInstance().logInfo("[ftp] Connect " + hostName + " Successed");
                         return true;
@@ -474,7 +480,8 @@ public class ftpDownload {
                 LogUtils.getInstance().logInfo("开始文件" + filename + "的下载"); // 中文乱码
 //                LogUtils.getInstance().logInfo("Start Download File:" + filename + " ");
                 OutputStream out = new FileOutputStream(localFile);
-                InputStream in = ftpClient.retrieveFileStream(new String(FullURL.getBytes("GBK"), "ISO-8859-1"));
+                // InputStream in = ftpClient.retrieveFileStream(new String(FullURL.getBytes("GBK"), "ISO-8859-1"));
+                InputStream in = ftpClient.retrieveFileStream(FullURL);
                 if (in == null) {
                     LogUtils.getInstance().logInfo("[ftp] Can't get" + filename + " Data from target URL");
                     out.close();
@@ -516,7 +523,8 @@ public class ftpDownload {
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
                 // int a = ftpClient.sendCommand("REST 1");
                 ftpClient.setRestartOffset(localSize);
-                InputStream in = ftpClient.retrieveFileStream(new String(FullURL.getBytes("GBK"), "ISO-8859-1"));
+                // InputStream in = ftpClient.retrieveFileStream(new String(FullURL.getBytes("GBK"), "ISO-8859-1"));
+                InputStream in = ftpClient.retrieveFileStream(FullURL);
                 if (in == null) {
                     LogUtils.getInstance().logInfo("[ftp] Can't get" + filename + " Data from target URL");
                     out.close();
@@ -549,9 +557,12 @@ public class ftpDownload {
                     }
                     in.close();
                     out.close();
+
+                    // 这是一个同步阻塞方法，如果调用错误，会导致程序卡住假死在这里。
                     ftpClient.completePendingCommand();
                 }
             }
+            LogUtils.getInstance().logInfo("[ftp] Download completePendingCommand!");
         } catch (Exception e) {
             e.printStackTrace();
             // System.err.println("[ftp] " + e);

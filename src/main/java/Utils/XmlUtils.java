@@ -22,8 +22,8 @@ public class XmlUtils {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder bulider = null;
-//            String curDiry = System.getProperty("user.dir") + "\\" + "PathSetting.xml";
-            String curDiry = System.getProperty("user.dir") + "\\" + "PathSettingSCSECData.xml";
+            String curDiry = System.getProperty("user.dir") + "\\" + "PathSetting.xml";
+//            String curDiry = System.getProperty("user.dir") + "\\" + "PathSettingSCSECData.xml";
             bulider = factory.newDocumentBuilder();
             Document document = bulider.parse(new File(curDiry));
             org.w3c.dom.Element rootElement = document.getDocumentElement();
