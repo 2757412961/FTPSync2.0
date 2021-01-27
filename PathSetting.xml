@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Path>
+    <HOST>192.168.137.116</HOST>
+    <PORT>21</PORT>
+    <SCSLogName>Anonymous</SCSLogName>
+    <SCSPassWord>None</SCSPassWord>
+
+    <RemoteBackupDir>/sync/</RemoteBackupDir>
+    <RemoteTargetDir>/history/</RemoteTargetDir>
+    <LocalBackupDir>F:/EnglishPath/03EndPoint/FTPSync2.0/FTPData/now/</LocalBackupDir>
+    <LocalTempDir>F:/EnglishPath/03EndPoint/FTPSync2.0/FTPData/history/</LocalTempDir>
+
+    <logPath>F:/EnglishPath/03EndPoint/FTPSync2.0/Log/alllog</logPath>
+    <errlogPath>F:/EnglishPath/03EndPoint/FTPSync2.0/Log/errorlog</errlogPath>
+</Path>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Path>
+    <HOST>192.168.2.8</HOST>
+    <PORT>2128</PORT>
+    <SCSLogName>ecdata</SCSLogName>
+    <SCSPassWord>123</SCSPassWord>
+
+    <RemoteBackupDir>/backup/ECdata/grib/</RemoteBackupDir>
+    <RemoteTargetDir>/target/ECdata/grib/</RemoteTargetDir>
+    <LocalBackupDir>D:/SCS/backup/ECdata/grib/</LocalBackupDir>
+    <LocalTempDir>D:/SCS/backup/ECdata/TempDownload/</LocalTempDir>
+
+    <logPath>D:/SCSWeb/SCS_FTP_EC_SYNC/Log/alllog</logPath>
+    <errlogPath>D:/SCSWeb/SCS_FTP_EC_SYNC/Log/errorlog</errlogPath>
+</Path>
