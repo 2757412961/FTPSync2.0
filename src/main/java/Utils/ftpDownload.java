@@ -343,11 +343,13 @@ public class ftpDownload {
                 // 设置终端的传输数据的 Socket 的 Sotimeout
                 ftpClient.setDataTimeout(30 * 1000);
                 // 设置终端的传输控制命令的 Socket 的 SoTimeout
-                // ftpClient.setDefaultTimeout(15000);
-                // ftpClient.setSoTimeout(20000);
+                // ftpClient.setDefaultTimeout(30 * 1000);
+                // ftpClient.setSoTimeout(30 * 1000);
                 // 设置当处于传输数据过程中，按指定的时间阈值定期让传输控制命令的 Socket 发送一个无操作命令 NOOP 给服务器，
-                // 让它 keep alive。
-                ftpClient.setControlKeepAliveTimeout(3 * 1000);
+                // 让它 keep alive。每隔 15S 向控制端口发送心跳数据，保证控制端口的活性
+                ftpClient.setControlKeepAliveTimeout(15);
+                // 设置控制端口的响应超时
+                ftpClient.setControlKeepAliveReplyTimeout(10 * 1000);
 
                 ftpClient.connect(hostName, port);
                 if (ftpClient.login(userName, password)) {
@@ -476,7 +478,8 @@ public class ftpDownload {
                 return false;
             }
 
-            if (localSize == 0) { // 正常下载
+            if (localSize == 0) {
+                // 正常下载
                 LogUtils.getInstance().logInfo("开始文件" + filename + "的下载"); // 中文乱码
 //                LogUtils.getInstance().logInfo("Start Download File:" + filename + " ");
                 OutputStream out = new FileOutputStream(localFile);
@@ -511,9 +514,14 @@ public class ftpDownload {
                         LogUtils.getInstance().logException("[ftp] Download " + filename + " Error1");
                         res = false;
                     }
+                    LogUtils.getInstance().logInfo("[ftp] Start in.close!"); // keshanchu1
                     in.close();
+                    LogUtils.getInstance().logInfo("[ftp] End in.close start out.close!"); // keshanchu1
                     out.close();
+                    LogUtils.getInstance().logInfo("[ftp] End out.close!"); // keshanchu1
+                    // 这是一个同步阻塞方法，如果调用错误，会导致程序卡住假死在这里。
                     ftpClient.completePendingCommand();
+                    LogUtils.getInstance().logInfo("[ftp] Download completePendingCommand!"); // keshanchu1
                 }
             } else {
                 // 断点续传
@@ -555,22 +563,23 @@ public class ftpDownload {
                         LogUtils.getInstance().logException("[ftp] Download " + filename + " Error2");
                         res = false;
                     }
+                    LogUtils.getInstance().logInfo("[ftp] Start in.close!"); // keshanchu1
                     in.close();
+                    LogUtils.getInstance().logInfo("[ftp] End in.close start out.close!"); // keshanchu1
                     out.close();
-
+                    LogUtils.getInstance().logInfo("[ftp] End out.close!"); // keshanchu1
                     // 这是一个同步阻塞方法，如果调用错误，会导致程序卡住假死在这里。
                     ftpClient.completePendingCommand();
+                    LogUtils.getInstance().logInfo("[ftp] Download completePendingCommand!"); // keshanchu1
                 }
             }
-            LogUtils.getInstance().logInfo("[ftp] Download completePendingCommand!");
         } catch (Exception e) {
             e.printStackTrace();
             // System.err.println("[ftp] " + e);
             LogUtils.getInstance().logException(e, "[ftp]");
+        } finally {
+            LogUtils.getInstance().logInfo("[ftp] Enter 'DataDownLoad' finally!");
         }
-//        finally {
-//            return res;
-//        }
 
         return res;
     }

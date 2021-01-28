@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Path>
+<!--    <HOST>ftp.ifremer.fr</HOST>-->
     <HOST>192.168.137.116</HOST>
     <PORT>21</PORT>
     <SCSLogName>Anonymous</SCSLogName>
     <SCSPassWord>None</SCSPassWord>
 
+<!--    <RemoteBackupDir>/ifremer/argo/</RemoteBackupDir>-->
     <RemoteBackupDir>/sync/</RemoteBackupDir>
     <RemoteTargetDir>/history/</RemoteTargetDir>
     <LocalBackupDir>F:/EnglishPath/03EndPoint/FTPSync2.0/FTPData/now/</LocalBackupDir>
