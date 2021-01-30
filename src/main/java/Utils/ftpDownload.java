@@ -520,7 +520,10 @@ public class ftpDownload {
                     out.close();
                     LogUtils.getInstance().logInfo("[ftp] End out.close!"); // keshanchu1
                     // 这是一个同步阻塞方法，如果调用错误，会导致程序卡住假死在这里。
-                    ftpClient.completePendingCommand();
+//                    Thread.sleep(5 * 1000);
+//                    ftpClient.completePendingCommand();
+                    closeConnections();
+                    LogUtils.getInstance().logInfo("[ftp] Close Connection!!!!!!!!!!!!!!!!"); // keshanchu1
                     LogUtils.getInstance().logInfo("[ftp] Download completePendingCommand!"); // keshanchu1
                 }
             } else {
@@ -569,7 +572,10 @@ public class ftpDownload {
                     out.close();
                     LogUtils.getInstance().logInfo("[ftp] End out.close!"); // keshanchu1
                     // 这是一个同步阻塞方法，如果调用错误，会导致程序卡住假死在这里。
-                    ftpClient.completePendingCommand();
+//                    Thread.sleep(5 * 1000);
+//                    ftpClient.completePendingCommand();
+                    closeConnections();
+                    LogUtils.getInstance().logInfo("[ftp] Close Connection!!!!!!!!!!!!!!!!"); // keshanchu1
                     LogUtils.getInstance().logInfo("[ftp] Download completePendingCommand!"); // keshanchu1
                 }
             }
